@@ -1,0 +1,16 @@
+.Button {
+    height: 35px;
+    padding: 0 15px;
+    background-color: green;
+    border: none;
+    color: white;
+    margin: 0 5px;
+
+    &_primary {
+        background-color: blue;
+    }
+
+    &_secondary {
+        background-color: gray;
+    }
+}
