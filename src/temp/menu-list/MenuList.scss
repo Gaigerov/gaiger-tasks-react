@@ -1,0 +1,39 @@
+.MenuList {
+    display: flex;
+
+    &__item {
+        position: relative;
+        height: 35px;
+        padding: 0 15px;
+
+        &:not(:last-child) {
+            border-right: 1px solid gray;
+        }
+
+        &:hover .MenuList__container {
+            display: block;
+        }
+    }
+
+    &__container {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        border: 1px solid goldenrod;
+        background-color: white;
+    }
+
+    &__subItem {
+        height: 35px;
+        padding: 0 15px;
+
+        &:hover {
+            background-color: blue;
+        }
+
+        &_selected {
+            background-color: blueviolet;
+        }
+    }
+}

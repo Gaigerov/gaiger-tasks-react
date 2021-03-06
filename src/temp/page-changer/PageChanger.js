@@ -41,9 +41,9 @@ export default class PageChanger extends React.Component {
             <div>
                 <div>{page}</div>
                 <div>
-                    <Button onClick={this.handleClickLeft} type="primary">left</Button>
+                    <Button onClick={this.handleClickLeft} type='primary'>left</Button>
                     <Button onClick={this.handleReset}>reset</Button>
-                    <Button onClick={this.handleClickRight} type="secondary">right</Button>
+                    <Button onClick={this.handleClickRight} type='secondary'>right</Button>
                 </div>
             </div>
         );

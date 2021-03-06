@@ -1,7 +1,21 @@
+@import './fonts/font.css';
+
+* {
+    font-family: 'Roboto';
+}
+
 html, body, #root {
     height: 100%;
 }
 
 body {
     margin: 0;
+}
+
+h2 {
+    font-size: 36px;
+}
+
+h4 {
+    font-size: 24px;
 }
