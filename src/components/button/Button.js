@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class Button extends React.Component {
+class Button extends React.Component {
 
     render() {
         const {styleType = 'primary', buttonName, ...props} = this.props;
@@ -12,3 +13,14 @@ export default class Button extends React.Component {
         );
     }
 }
+
+Button.propTypes = {
+    type: PropTypes.string,
+    styleType: PropTypes.string,
+    buttonName: PropTypes.string,
+};
+
+Button.defaultProps = {
+};
+
+export default Button;

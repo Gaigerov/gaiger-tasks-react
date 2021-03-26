@@ -5,27 +5,14 @@ import TableForm from '../table-form';
 import TaskList from '../task-list';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSwatchbook} from '@fortawesome/free-solid-svg-icons';
-import {FORM_STATUS, STORE_KEY, TASK_ON_PAGE, EMPTY_FORM} from '../../consts';
+import {FORM_STATUS, STORE_KEY, TASK_ON_PAGE, EMPTY_FORM, PAGE_NAME, TASK_STATUS} from '../../consts';
 import {getStorageValue, setStorageValue} from '../../utils';
 import {v4} from 'uuid';
 import Pagination from '../pagination';
-import DeskPage from '../desk-page/index';
+import DeskPage from '../desk-page';
 import {sortBy, reverse} from 'lodash';
 
 moment.lang('ru');
-
-
-const X = [
-    {name: 'Ivan', isStudent: true},
-    {name: 'Ivan', isStudent: false},
-    {name: 'Ivan', isStudent: false},
-    {name: 'Ivan', isStudent: true},
-    {name: 'Ivan', isStudent: true},
-];
-
-console.log({
-    sorted: reverse(sortBy(X, m => m.isStudent))
-})
 
 export default class App extends React.Component {
     constructor(props) {
@@ -44,7 +31,7 @@ export default class App extends React.Component {
                 page: 0,
             },
             searchInput: '',
-            page: '',
+            page: PAGE_NAME.MAIN,
         };
     }
 
@@ -55,6 +42,20 @@ export default class App extends React.Component {
                 ...state.pagination,
                 page: 0,
             },
+        }));
+    }
+
+    handleEditPage = () => {
+        this.setState(state => ({
+            ...state,
+            page: PAGE_NAME.MAIN ? PAGE_NAME.EDIT : PAGE_NAME.MAIN,
+        }));
+    }
+
+    handleMainPage = () => {
+        this.setState(state => ({
+            ...state,
+            page: PAGE_NAME.EDIT ? PAGE_NAME.MAIN : PAGE_NAME.EDIT,
         }));
     }
 
@@ -86,16 +87,14 @@ export default class App extends React.Component {
         this.saveTasksToStorage(taskList);
     }
 
-    filteredTask = task => {
-        const taskList = this.state.tasks.filter(() => task.important);
-        this.saveTasksToStorage(task.concat(taskList));
-    }
-
     clearTaskList = () => {
         this.setState(state => {
             return {
                 ...state,
                 tasks: [],
+                pagination: {
+                    page: 0
+                },
             };
         });
     }
@@ -177,6 +176,7 @@ export default class App extends React.Component {
         if (this.state.form.status === FORM_STATUS.CREATE) {
             this.createTask({
                 ...task,
+                status: TASK_STATUS.PENDING,
                 id: v4(),
             });
             this.handleClearForm();
@@ -212,14 +212,16 @@ export default class App extends React.Component {
     render() {
         const {tasks, pagination, searchInput} = this.state;
 
-        const filteredTasks = tasks.filter(task => {
+        const filteredTasks = reverse(tasks.filter(task => {
             const title = task.title.toLowerCase();
             const description = task.description.toLowerCase();
             const searchValue = searchInput.toLowerCase();
             return title.includes(searchValue) || description.includes(searchValue);
-        });
+        }));
 
-        const pageCount = Math.ceil(filteredTasks.length / TASK_ON_PAGE);
+        const sortedTasks = reverse(sortBy(filteredTasks, m => m.important));
+
+        const pageCount = Math.ceil(sortedTasks.length / TASK_ON_PAGE);
 
         return (
             <div>
@@ -230,8 +232,12 @@ export default class App extends React.Component {
                     <h2>Менеджер задач</h2>
                 </div>
                 <span className="container-fluid">
-                    <TableHeader />
-                    <div className="d-flex ml-2 mr-2 row">
+                    <TableHeader
+                        page={this.state.page}
+                        onHandleEditPage={this.handleEditPage}
+                        onHandleMainPage={this.handleMainPage}
+                    />
+                    {this.state.page === PAGE_NAME.MAIN ? <div className="d-flex ml-2 mr-2 row">
                         <div className="card col-12 col-md-6 col-lg-4">
                             <TableForm
                                 title={this.state.form.values.title}
@@ -247,16 +253,17 @@ export default class App extends React.Component {
                         </div>
                         <div className="card col-12 col-md-6 col-lg-8">
                             <TaskList
+                                pageName={this.state.page}
+                                page={pagination.page}
+                                tasks={sortedTasks}
                                 searchValue={searchInput}
                                 onChangeSearch={this.handleChangeSearch}
-                                tasks={filteredTasks}
-                                page={pagination.page}
                                 onRemoveTask={this.removeTask}
                                 onEditTask={this.editTask}
                                 onChangeFormStatus={this.changeFormStatus}
                                 onToggleTaskImportant={this.toggleTaskImportant}
-                                clearForm={this.handleClearForm}
                                 onClearTaskList={this.clearTaskList}
+                                formStatus={this.state.form.status}
                             />
                             <Pagination
                                 page={pagination.page}
@@ -264,9 +271,17 @@ export default class App extends React.Component {
                                 pageCount={pageCount}
                             />
                         </div>
-                    </div>
+                    </div> : <div>
+                        <DeskPage
+                            tasks={sortedTasks}
+                            onRemoveTask={this.removeTask}
+                            onEditTask={this.editTask}
+                            onChangeFormStatus={this.changeFormStatus}
+                            onToggleTaskImportant={this.toggleTaskImportant}
+                            formStatus={this.state.form.status}
+                        />
+                    </div>}
                 </span>
-                <DeskPage />
             </div>
         );
     }
@@ -292,27 +307,33 @@ export default class App extends React.Component {
  * (+) Фильтрация (по названию задачи, по дате\диапазон)
  * Календарь
  * Драг-дроп задач по статусам (В ожидании\ В работе\ Выполнено)
+ * Переезд на typescript
+ * Внедрение Redux
+ * Переезд на функциональные компоненты
+ * Научимся прогонять тесты после пуша в мастер (TI\CD)
+ * Автовыкладка на github pages
  */
 
 /**
- * Пагинацию доделать
+ * Пагинацию доделать (+)
  * (+) Почитать про импорты и экспорты (одноврмененный импорт и экспорт одной строкой, переименование дефолтных и не дефолтных импортов)
  * (+) Кнопка star внутри тасок должна менять значение импорт в тасках
  * (+) Редактирование тасок
- * Сортировка задач по важности (важные всегда в начале) (-)
+ * Сортировка задач по важности (важные всегда в начале) (+)
  * (+) При наведении на иконки тасок должен менятся их цвет. Звезда - желтый, редактировние - зеленый, удаление - красный
  * Курсор на кнопках должен быть пальцем (+)
  * (+) При наведении на таски должны подсвечиваться (это есть в бутстрепе)
  * (+) Название события - звездочка должна иметь отступ
- * Верстка страницы "Работа с задачами", три колонки. Все задачи должны отобразится в колонке - в ожидании (+/-)
+ * Верстка страницы "Работа с задачами", три колонки. Все задачи должны отобразится в колонке - в ожидании (+)
  *
  * (+) Страницы должны начинатся с "1"
- * Когда запись редактируется, она должна выделятся синим (используй классы и информацию из стейта) (-)
+ * Когда запись редактируется, она должна выделятся синим (используй классы и информацию из стейта) (+/-)
  * (+) Сделать кнопку "Удалить все таски"
  * Объеденить список тасок в одну лист группу https://getbootstrap.com/docs/5.0/components/list-group/ (+)
  *
- * При очистке списка, страница должна сбрасыватся на 0
- * Сделать переход между Страницами "Редактирование задач" и "Работа с задачами"
- * Верстка календаря
- * Логика открытия\закрытия календаря
+ * (+) При очистке списка, страница должна сбрасыватся на 0
+ * Сделать переход между Страницами "Редактирование задач" и "Работа с задачами" (+)
+ * Верстка календаря (-)
+ * Логика открытия\закрытия календаря (-)
+ * Описать propTypes для всех компонентов (+)
  */

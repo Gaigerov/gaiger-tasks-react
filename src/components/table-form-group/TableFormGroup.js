@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class TableFormGroup extends React.Component {
+class TableFormGroup extends React.Component {
     render() {
         const {label, required, handleInput, ...props} = this.props;
         return (
@@ -14,3 +15,24 @@ export default class TableFormGroup extends React.Component {
         );
     }
 }
+
+TableFormGroup.propTypes = {
+    id: PropTypes.string,
+    value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]),
+    type: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]),
+    placeholder: PropTypes.string,
+    label: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    required: PropTypes.bool,
+};
+
+TableFormGroup.defaultProps = {
+};
+
+export default TableFormGroup;

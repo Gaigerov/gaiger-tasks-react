@@ -5,8 +5,9 @@ import Button from '../button';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {FORM_STATUS} from '../../consts';
+import PropTypes from 'prop-types';
 
-export default class TableForm extends React.Component {
+class TableForm extends React.Component {
 
     render() {
         const {
@@ -26,7 +27,6 @@ export default class TableForm extends React.Component {
                 className="card-body"
                 onSubmit={onSubmit}
             >
-                {/* Должен менятся статус от formStatus */}
                 <h4 id="formTitle"
                 >{formTitle}</h4>
                 <TableFormGroup
@@ -88,3 +88,20 @@ export default class TableForm extends React.Component {
         );
     }
 }
+
+TableForm.propTypes = {
+    title: PropTypes.string,
+    description: PropTypes.string,
+    date: PropTypes.string,
+    important: PropTypes.bool,
+    formStatus: PropTypes.string,
+    onSubmit: PropTypes.func.isRequired,
+    handleInput: PropTypes.func.isRequired,
+    onHandleClearForm: PropTypes.func.isRequired,
+    formTitle: PropTypes.string,
+};
+
+TableForm.defaultProps = {
+};
+
+export default TableForm;

@@ -2,8 +2,9 @@ import React from 'react';
 import CardTask from '../card-task';
 import {TASK_ON_PAGE} from '../../consts';
 import Button from '../button';
+import PropTypes from 'prop-types';
 
-export default class TaskList extends React.Component {
+class TaskList extends React.Component {
     getTaskOnPage = () => {
         const startIndex = this.props.page * TASK_ON_PAGE;
         const endIndex = startIndex + TASK_ON_PAGE;
@@ -12,14 +13,15 @@ export default class TaskList extends React.Component {
 
     render() {
         const {
+            pageName,
             onRemoveTask,
             onEditTask,
             onChangeFormStatus,
             onToggleTaskImportant,
-            clearForm,
             searchValue,
             onChangeSearch,
             onClearTaskList,
+            formStatus
         } = this.props;
 
         const showTasks = this.getTaskOnPage();
@@ -48,19 +50,41 @@ export default class TaskList extends React.Component {
                     >
                     </Button>
                 </div>
-
-                {showTasks.map(task => (
-                    <CardTask
-                        key={task}
-                        task={task}
-                        onRemoveTask={onRemoveTask}
-                        onEditTask={onEditTask}
-                        onChangeFormStatus={onChangeFormStatus}
-                        onToggleTaskImportant={onToggleTaskImportant}
-                        clearForm={clearForm}
-                    />
-                ))}
+                <div className="list-group">
+                    {showTasks.map(task => (
+                        <CardTask
+                            key={task}
+                            task={task}
+                            pageName={pageName}
+                            onRemoveTask={onRemoveTask}
+                            onEditTask={onEditTask}
+                            onChangeFormStatus={onChangeFormStatus}
+                            onToggleTaskImportant={onToggleTaskImportant}
+                            formStatus={formStatus}
+                        />
+                    ))}
+                </div>
             </div>
         );
     }
 }
+
+TaskList.propTypes = {
+    searchValue: PropTypes.string,
+    onChangeSearch: PropTypes.func.isRequired,
+    tasks: PropTypes.array,
+    page: PropTypes.shape({
+        page: PropTypes.number,
+    }),
+    onRemoveTask: PropTypes.func.isRequired,
+    onEditTask: PropTypes.func.isRequired,
+    onChangeFormStatus: PropTypes.func.isRequired,
+    onToggleTaskImportant: PropTypes.func.isRequired,
+    onClearTaskList: PropTypes.func.isRequired,
+    formStatus: PropTypes.string,
+};
+
+TaskList.defaultProps = {
+};
+
+export default TaskList;

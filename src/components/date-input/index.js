@@ -1,1 +1,1 @@
-export {default as DateInput} from './DareInput';
+export {default as DateInput} from './DateInput';

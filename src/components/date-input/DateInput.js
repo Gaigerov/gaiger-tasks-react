@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 
 const days = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
@@ -29,7 +29,7 @@ const getMonthPage = (month, year) => {
 
 const CONTAINER_CLASS = 'DateInput';
 
-const isClickInContainer = (element) => {
+const isClickInContainer = element => {
     if (element.classList.contains(CONTAINER_CLASS)) {
         return true;
     }
@@ -39,9 +39,9 @@ const isClickInContainer = (element) => {
     }
 
     return isClickInContainer(element.parentNode);
-}
+};
 
-export default class DateInput extends React.Component {
+class DateInput extends React.Component {
     constructor(props) {
         super(props);
 
@@ -72,7 +72,6 @@ export default class DateInput extends React.Component {
         const {isShow, month, year} = this.state;
         const calendar = getMonthPage(month, year);
 
-        
         return (
             <div className={CONTAINER_CLASS}>
                 <input type="text" value={value} onChange={onChange} />
@@ -85,3 +84,10 @@ export default class DateInput extends React.Component {
         );
     }
 }
+
+DateInput.propTypes = {
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+};
+
+export default DateInput;
